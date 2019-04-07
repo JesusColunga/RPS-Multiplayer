@@ -1,15 +1,21 @@
 /* style.css            */
-/* GifTastic: GIPHY API */
-/* 23/Mar/2019          */
+/* Unit 7: Rock Paper Scissors */
+/* 2/Apr/2019                  */
 
 body {
 }
 
 
 /* - - - -  class  - - - - - */
+.rpsImage {
+	 height: 240px;
+}
 
 
 /* - - - -  id  - - - - - */
+#topHeader {
+	font-family: 'Indie Flower', cursive;
+}
 
 
 /* - - -  Media Queries  - - - */

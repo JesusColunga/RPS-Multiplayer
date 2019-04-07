@@ -1,6 +1,6 @@
-<!-- index.html                                         -->
+<!-- index.html  v3                                     -->
 <!-- Unit 7 Assignment: Rock Paper Scissors (Challenge) -->
-<!-- 1/Apr/2019                                         -->
+<!-- 6/Apr/2019                                         -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +10,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	
+    <!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -18,22 +21,70 @@
     <!-- Link to external CSS -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 
-    <title>  </title>
+    <title> Rock Paper Scissors </title>
 </head>
 
 
 <body>
     <header>
+		<div class="card mb-3" style="">
+		  <div class="row no-gutters">
+		  
+			<div class="col-md-8">
+			  <div class="card-body px-4 py-0">
+				<h1 class="card-title text-center" id="topHeader"> Rock Paper Scissors Game </h1>
+				<p class="card-text">
+					Play the game online:  <br>
+					<ul>
+						<li> Type your name             </li>
+						<li> Wait for your opponent     </li>
+						<li> Make your choise (R, P, S) </li>
+						<li> Have  F U N   ! ! !        </li>
+					</ul>
+				</p>
+			  </div>
+			</div>
+			
+			<div class="col-md-4">
+			  <img src="assets/images/sn-rockpaper.jpg" class="card-img" alt="Rock Paper Scissors">
+			</div>
+			
+		  </div>
+		</div>
     </header>
 
     <div class="container">
-        <div class="row h4" id="row1">        <!-- Row 1:  -->
+        <div class="row my-3" id="row1">      <!-- Row 1: Player's name -->
+			<form id="userName-form">
+			  <label for="userName-input"> Type your name:</label>
+			  <input type="text" class="mx-5" id="userName-input">
+			  <button type="submit" class="btn btn-outline-info" id="clicUserName" > Opponent Search </button>
+			</form>
         </div>
 
-        <div class="row h5" id="row2">        <!-- Row 2:  -->
+        <div class="row" id="row2">           <!-- Row 2: Opponent Search -->
         </div>
     
-        <div class="row" id="row3">           <!-- Row 3:  -->
+        <div class="row" id="row3">           <!-- Row 3: RPS images -->
+			<div class="card-group">
+			  <div class="card" id="RockCard">
+				<img src="assets/images/rock.jpg"
+				     class="card-img-top rpsImage" alt="Rock">
+				<div class="card-footer text-center"> Rock </div>
+			  </div>
+			  
+			  <div class="card" id="PaperCard">
+				<img src="assets/images/paper.png" 
+				     class="card-img-top rpsImage" alt="Paper">
+				<div class="card-footer text-center"> Paper </div>
+			  </div>
+			  
+			  <div class="card" id="ScissorsCard">
+				<img src="assets/images/scissors.jpg" 
+				     class="card-img-top rpsImage" alt="Scissors">
+				<div class="card-footer text-center"> Scissors </div>
+			  </div>
+			</div>
         </div>
 
         <div class="row" id="row4">           <!-- Row 4:  -->
@@ -44,7 +95,12 @@
     </div>
 
     <!-- Link to FireBase -->
-	<script src="https://www.gstatic.com/firebasejs/5.9.2/firebase.js"> </script>
+	<script src="https://www.gstatic.com/firebasejs/5.9.3/firebase.js"></script>
+	<!-- Add additional services that you want to use -- >
+	<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-auth.js"></script> -->
+	
+    <!-- Link to Moment.js should go here -->
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
 
     <!-- Link to JQuery -->
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -65,3 +121,34 @@
 </body>
 
 </html>
+
+<!--
+<div class="card mb-3" style="max-width: 540px;">
+  <div class="row no-gutters">
+    <div class="col-md-4">
+      <img src="..." class="card-img" alt="...">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <form id="movie-form">
+      <label for="movie-input">Search for a movie</label>
+      <input type="text" id="movie-input"><br>
+
+      <!-- This button will trigger our AJAX call -- >
+      <input id="find-movie" type="submit" value="Movie Search">
+    </form>
+
+
+			  <input id="clicUserName" type="submit" value="Opponent Search">
+
+
+-->
