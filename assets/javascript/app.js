@@ -113,15 +113,18 @@ function processIndividualResult (winner) {
 	if ( ((game.userNumber === 1) && (winner === 1)) ||
 	     ((game.userNumber === 2) && (winner === 2)) ) {
 			st = "You WON!";
+			alert ( "You WON!" );
 	console.log ( "(processIndividualResult-won)winner=", winner, "game.userNumber=", game.userNumber );
 	} else
 	if ( ((game.userNumber === 1) && (winner === 2)) ||
 	     ((game.userNumber === 2) && (winner === 1)) ) {
 			st = "You LOST!";
+			alert ( "You LOST!" );
 	console.log ( "(processIndividualResult-lost)winner=", winner, "game.userNumber=", game.userNumber );
 	} else
 	if (winner === 3) {
 			st = "You both Tied!";
+			alert ( "You Tied!" );
 	}
 
 	$("#row2").append ( "<span class='w-100'>" + st + "</span>" );

@@ -31,16 +31,31 @@ body {
     h1 {
         font-size:      40px;
     }
+
+	#leftP {
+		padding-left: 90px;
+	}
+
 }
 
 @media only screen and (max-width: 768px) {
     h1 {
         font-size:      30px;
     }
+
+	#leftP {
+		padding-left: 60px;
+	}
+
 }
 
 @media only screen and (max-width: 640px) {
     h1 {
         font-size:      20px;
     }
+	
+	#leftP {
+		padding-left: 40px;
+	}
+
 }
