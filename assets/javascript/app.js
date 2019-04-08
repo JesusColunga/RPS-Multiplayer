@@ -107,20 +107,17 @@ function restartGame (snap) {
          /* ---------- ---------- ---------- ---------- */
 		 
 function processIndividualResult (winner) {
-		console.log ( "(processIndividualResult)winner=", winner, "game.userNumber=", game.userNumber );
 	var st = "";
 	
 	if ( ((game.userNumber === 1) && (winner === 1)) ||
 	     ((game.userNumber === 2) && (winner === 2)) ) {
 			st = "You WON!";
 			alert ( "You WON!" );
-	console.log ( "(processIndividualResult-won)winner=", winner, "game.userNumber=", game.userNumber );
 	} else
 	if ( ((game.userNumber === 1) && (winner === 2)) ||
 	     ((game.userNumber === 2) && (winner === 1)) ) {
 			st = "You LOST!";
 			alert ( "You LOST!" );
-	console.log ( "(processIndividualResult-lost)winner=", winner, "game.userNumber=", game.userNumber );
 	} else
 	if (winner === 3) {
 			st = "You both Tied!";
