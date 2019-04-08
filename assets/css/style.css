@@ -1,6 +1,6 @@
 /* style.css            */
 /* Unit 7: Rock Paper Scissors */
-/* 2/Apr/2019                  */
+/* 8/Apr/2019                  */
 
 body {
 }
@@ -8,13 +8,21 @@ body {
 
 /* - - - -  class  - - - - - */
 .rpsImage {
-	 height: 240px;
+	 height		: 240px;
 }
 
 
 /* - - - -  id  - - - - - */
 #topHeader {
 	font-family: 'Indie Flower', cursive;
+}
+
+#maxH {
+	max-height	: 200px;
+}
+
+#leftP {
+	padding-left: 90px;
 }
 
 

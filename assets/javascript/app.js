@@ -1,6 +1,6 @@
 /* app.js  v3                  */
 /* Unit 7: Rock Paper Scissors */
-/* 6/Apr/2019                  */
+/* 8/Apr/2019                  */
 
 
 // GLOBAL VARIABLES
@@ -36,12 +36,18 @@ var images = [
 		}
 	];
 var game = {
-	status       : "start",   // start, userGaveName, wait4Second, ready2Play, choiceMade
-	userName     : "",
-	userDate     : "",
-	userNumber   : 0,
-	playingKey   : "",
-	opponentName : ""
+	status         : "start",   // start, userGaveName, wait4Second, ready2Play, choiceMade
+	userName       : "",        // Player 1
+	userDate       : "",
+	userNumber     : 0,
+	userWins       : 0,
+	userLosses     : 0,
+	userTies       : 0,
+	playingKey     : "",
+	opponentName   : "",        // Player 2
+	opponentWins   : 0,
+	opponentLosses : 0,
+	opponentTies   : 0
 };
 
 
@@ -83,10 +89,167 @@ function RPSplay () {
 	}
 };
 
+         /* ---------- ---------- ---------- ---------- */
+
+function restartGame (snap) {
+	if (snap) {
+		db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
+			player1Choice : "",
+			player2Choice : "",
+			winner        : 0,
+			restartGame   : false
+		});
+		RPSplay ();
+		game.status = "ready2Play";
+	};
+};
+
+         /* ---------- ---------- ---------- ---------- */
+		 
+function processIndividualResult (winner) {
+		console.log ( "(processIndividualResult)winner=", winner, "game.userNumber=", game.userNumber );
+	var st = "";
+	
+	if ( ((game.userNumber === 1) && (winner === 1)) ||
+	     ((game.userNumber === 2) && (winner === 2)) ) {
+			st = "You WON!";
+	console.log ( "(processIndividualResult-won)winner=", winner, "game.userNumber=", game.userNumber );
+	} else
+	if ( ((game.userNumber === 1) && (winner === 2)) ||
+	     ((game.userNumber === 2) && (winner === 1)) ) {
+			st = "You LOST!";
+	console.log ( "(processIndividualResult-lost)winner=", winner, "game.userNumber=", game.userNumber );
+	} else
+	if (winner === 3) {
+			st = "You both Tied!";
+	}
+
+	$("#row2").append ( "<span class='w-100'>" + st + "</span>" );
+};
+		 
+function processResultsPlayer2 (snap, winner) {
+	 $("#row2").empty ();
+	 
+	 $("#row2").html ( "<span class='w-100'>" +
+					   "You played '"         +
+					   snap.player2Choice	  +
+					   "' and "               + 
+					   game.opponentName      +
+					   " chose '"             +
+					   snap.player1Choice     +
+					   "' </span>"
+					 );
+					 
+	 processIndividualResult (winner);
+
+	 $("#row2").append (
+		"Games won: " + game.opponentWins + "   /   Games lost: " + game.opponentLosses + "   /   Games tied: " + game.opponentTies
+	 );
+};
+		 
+function processResultsPlayer1 (snap, winner) {
+	 $("#row2").empty ();
+	 
+	 $("#row2").html ( "<span class='w-100'>" +
+					   "You played '"         +
+					   snap.player1Choice	  +
+					   "' and "               + 
+					   game.opponentName      +
+					   " chose '"             +
+					   snap.player2Choice     +
+					   "' </span>"
+					 );
+					 
+	 processIndividualResult (winner);
+
+	 $("#row2").append (
+		"Games won: " + game.userWins + "   /   Games lost: " + game.userLosses + "   /   Games tied: " + game.userTies
+	 );
+	 
+	db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
+		restartGame        : true
+	});
+};
+		 
+function showResults (snap, winner) {
+	if (game.userNumber === 1) {
+			processResultsPlayer1 (snap, winner);
+	} else
+	if (game.userNumber === 2) {
+			processResultsPlayer2 (snap, winner);
+	}
+
+	$("#row2").append (
+		"<span class='w-100'> Play Again ! ! ! </span>"
+	);
+};
+
+function player2IsWinner (snap) {
+	db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
+		winner        : 2,
+		player2Wins   : snap.player2Wins + 1,
+		player1Losses : snap.player1Losses + 1
+	});
+	
+	game.userLosses   ++;
+	game.opponentWins ++;
+};
+
+function playersTie (snap) {
+	db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
+		winner        : 3,   // ties
+		player1Ties   : snap.player1Ties + 1,
+		player2Ties   : snap.player2Ties + 1
+	});
+
+	game.userTies     ++;
+	game.opponentTies ++;
+};
+
+function player1IsWinner (snap) {
+	db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
+		winner        : 1,
+		player1Wins   : snap.player1Wins + 1,
+		player2Losses : snap.player2Losses + 1
+	});
+	
+	game.userWins       ++;
+	game.opponentLosses ++;
+};
+
+function checkWinner (snap) {
+	var p1 = snap.player1Choice;
+	var p2 = snap.player2Choice;
+	if ( (p1 === "Rock"     && p2 === "Scissors") ||
+	     (p1 === "Scissors" && p2 === "Paper"   ) ||
+	     (p1 === "Paper"    && p2 === "Rock"    ) ) {
+			 player1IsWinner (snap);
+			 return 1;                 // Player 1 is the winner
+	} else if (p1 === p2) {
+			 playersTie (snap);
+			 return 3;                 // Tie
+	} else {
+			 player2IsWinner (snap);
+			 return 2;                 // Player 2 is the winner
+	}
+};
+
+function checkChoisesMade (snap) {
+	var winner = 0;
+	if ( (snap.player1Choice !== "") &&
+	     (snap.player2Choice !== "") &&
+		 (snap.winner        === 0 ) ) {
+			 winner = checkWinner (snap);
+			 showResults (snap, winner);
+		 }
+};
+
+         /* ---------- ---------- ---------- ---------- */
+
 function launchChoiceListener () {
 	db.ref ( "RPSgame/playing/" + game.playingKey ).on ("value",
 		function ( snapShot )    {
-			checkWinner ( snapShot.val () );
+			checkChoisesMade ( snapShot.val () );
 		},
 		function ( errorObject ) {
 		 console.log("Errors handled: " + errorObject.code);
@@ -191,35 +354,6 @@ function setGame2 (snap) {			  // Set game for player 2
 
 /* --------------------    End  User 2   -------------------- */
 
-function checkUserWaiting () {
-	db.ref ( "RPSgame/userWaiting" ).once ("value"). then (
-			function ( snapShot )    {
-				var usrWaitValue = snapShot.val ();
-				
-				if ((usrWaitValue === null) ||
-				    (usrWaitValue.userName === "")) {
-					setUserWait ();              // Wait for a 2nd player
-				} else {
-					setPairUsers (usrWaitValue);      // There's a player waiting
-				}
-			},
-			function ( errorObject ) {
-				console.log ("Errors handled: " + errorObject.code);
-			});
-};
-
-function processUserName (userName) {
-	if (userName === "") {
-		alert ("Please type your name");
-	} else {
-		$("#row1").empty ();
-		var date = moment ().format();
-		game.userName = userName;
-		game.userDate = date;
-		game.status   = "userGaveName";
-		checkUserWaiting ();
-	};
-};
 
 function saveChoice (choice) {
 	game.status = "choiceMade";
@@ -239,93 +373,38 @@ function saveChoice (choice) {
 	}
 };
 
-function checkWinner (snap) {
-	var p1, p2;
-	var w1=0; l1=0; t1=0; w2=0; l2=0; t2=0;
-	if ( (snap.player1Choice !== "") &&
-	     (snap.player2Choice !== "") &&
-		 (snap.winner        === 0 ) ) {
-			 p1 = snap.player1Choice;
-			 p2 = snap.player2Choice;
-			 if ( (p1 === "Rock"     && p2 === "Scissors") ||
-			      (p1 === "Scissors" && p2 === "Paper"   ) ||
-				  (p1 === "Paper"    && p2 === "Rock"    ) ) {
-				db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
-					winner        : 1,
-					player1Wins   : snap.player1Wins + 1,
-					player2Losses : snap.player2Losses + 1
-				});
-				w1 = snap.player1Wins + 1;
-				l2 = snap.player2Losses + 1;
-			 } else if (p1 === p2) {
-				db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
-					winner        : 3,   // ties
-					player1Ties   : snap.player1Ties + 1,
-					player2Ties   : snap.player2Ties + 1
-				});
-				t1 = snap.player1Ties + 1;
-				t2 = snap.player2Ties + 1;
-			 } else {
-				db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
-					winner        : 2,
-					player2Wins   : snap.player2Wins + 1,
-					player1Losses : snap.player1Losses + 1
-				});
-				w2 = snap.player2Wins + 1;
-				l1 = snap.player1Losses + 1;
-			 }
-			 if (game.userNumber === 1) {
-				 $("#row2").empty ();
-				 $("#row2").html ( "<span class='w-100'>" +
-				                   "You chose '"          +
-								   snap.player1Choice	  +
-								   "' and "               + 
-								   game.opponentName      +
-								   " played '"            +
-								   snap.player2Choice     + 
-								   "'. Play Again ! ! !"
-				                 );
-				 console.log ("w1=", w1, "l1=", l1, "t1=", t1);
-				 console.log ("w2=", w2, "l2=", l2, "t2=", t2);
-				 console.log ("snap.player1Wins=", snap.player1Wins);
-				 $("#row2").append (
-					"Games won: " + w1 + "   /   Games lost: " + l1 + "   /   Games tied: " + t1
-				 );
-				db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
-					restartGame        : true
-				});
-			 } else
-			 if (game.userNumber === 2) {
-				 $("#row2").empty ();
-				 $("#row2").html ( "<span class='w-100'>" +
-				                   "You chose '"          +
-								   snap.player2Choice	  +
-								   "' and "               + 
-								   game.opponentName      +
-								   " played '"            +
-								   snap.player1Choice     +
-								   "'. Play Again ! ! !"
-				                 );
-				 $("#row2").append (
-					"Games won: " + w2.toString() + "   /   Games lost: " + l2.toString() + "   /   Games tied: " + t2.toString()
-				 );
-			 } 
-		 }
+         /* ---------- ---------- ---------- ---------- */
+
+function checkUserWaiting () {
+	db.ref ( "RPSgame/userWaiting" ).once ("value"). then (
+		function ( snapShot )    {
+			var usrWaitValue = snapShot.val ();
+			
+			if ((usrWaitValue === null) ||
+				(usrWaitValue.userName === "")) {
+				setUserWait ();               // Wait for a 2nd player
+			} else {
+				setPairUsers (usrWaitValue);  // There's a player waiting
+			}
+		},
+		function ( errorObject ) {
+			console.log ("Errors handled: " + errorObject.code);
+	});
 };
 
-function restartGame (snap) {
-	//console.log ( "(restartGame) snap=", snap );
-	if (snap) {
-		db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
-			player1Choice : "",
-			player2Choice : "",
-			winner        : 0,
-			restartGame   : false
-		});
-		RPSplay ();
-		game.status = "ready2Play";
+function processUserName (userName) {
+	if (userName === "") {
+		alert ("Please type your name");
+	} else {
+		$("#row1").empty ();
+		var date = moment ().format();
+		game.userName = userName;
+		game.userDate = date;
+		game.status   = "userGaveName";
+		checkUserWaiting ();
 	};
 };
+
 
 // FUNCTION CALLS (Execution)
 // =======================================================================================
@@ -342,12 +421,12 @@ db.ref ( "RPSgame/playing/" ).on ("value",
 	function ( snapShot )    {
 		if ( (game.userNumber === 1) &&
 		     (game.status     === "wait4Second") ) {
-			setGame1 ( snapShot.val () );
+				setGame1 ( snapShot.val () );
 		} else {
-			if ( (game.userNumber === 2) &&
-				 (game.status     === "userGaveName") ) {
+		if ( (game.userNumber === 2) &&
+			 (game.status     === "userGaveName") ) {
 				setGame2 ( snapShot.val () );
-			}
+		}
 		} 
 	},
 	function ( errorObject ) {
@@ -362,28 +441,3 @@ $("#row3").on ( "click", 					// clic to make choice
 					}
 
 				});
-
-				
-/*
-	db.ref ( "RPSgame/playing/" + game.playingKey ).set ({
-		restartGame        : true
-	});
-
----------------------------
-	db.ref ( "RPSgame/playing/" + game.playingKey  + "/player1Choice" ).on ("value",
-		function ( snapShot )    {
-			checkWinner ( snapShot.val () );
-		},
-		function ( errorObject ) {
-		 console.log("Errors handled: " + errorObject.code);
-		});
-		
-	db.ref ( "RPSgame/playing/" + game.playingKey  + "/player2Choice" ).on ("value",
-		function ( snapShot )    {
-			checkWinner ( snapShot.val () );
-		},
-		function ( errorObject ) {
-		 console.log("Errors handled: " + errorObject.code);
-		});
-
-*/
