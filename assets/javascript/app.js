@@ -1,6 +1,6 @@
 /* app.js  v3                  */
 /* Unit 7: Rock Paper Scissors */
-/* 8/Apr/2019                  */
+/* 9/Apr/2019                  */
 
 
 // GLOBAL VARIABLES
@@ -39,15 +39,18 @@ var game = {
 	status         : "start",   // start, userGaveName, wait4Second, ready2Play, choiceMade
 	userName       : "",        // Player 1
 	userDate       : "",
-	userNumber     : 0,
+	userNumber     : 0,         // 1 = User / 2 - Opponent
 	userWins       : 0,
 	userLosses     : 0,
 	userTies       : 0,
+	userMessage    : "",
 	playingKey     : "",
 	opponentName   : "",        // Player 2
 	opponentWins   : 0,
 	opponentLosses : 0,
-	opponentTies   : 0
+	opponentTies   : 0,
+	opponentMessage: "",
+	chat           : []
 };
 
 
@@ -86,6 +89,18 @@ function RPSplay () {
 		$("#" + images [ct].imgAlt + "Card").empty  ();
 		$("#" + images [ct].imgAlt + "Card").append ( img  );
 		$("#" + images [ct].imgAlt + "Card").append ( foot );
+	}
+};
+
+         /* ---------- ---------- ---------- ---------- */
+
+function showChat (chat) {
+	game.chat = chat;
+	$("#chat").empty ();
+	for (ct = 0; ct < chat.length; ct ++) {
+		if (chat [ct].trim () !== "") {
+			$("#chat").append (chat [ct], "<br>");
+		}
 	}
 };
 
@@ -262,6 +277,14 @@ function launchChoiceListener () {
 		function ( errorObject ) {
 		 console.log("Errors handled: " + errorObject.code);
 		});
+		
+	db.ref ( "RPSgame/playing/" + game.playingKey + "/chat" ).on ("value",
+		function ( snapShot )    {
+			showChat ( snapShot.val () );
+		},
+		function ( errorObject ) {
+		 console.log("Errors handled: " + errorObject.code);
+		});
 };
 
 /* --------------------   Begin User 1   -------------------- */
@@ -326,7 +349,8 @@ function setPairUsers (usrWaitValue) {
 				player2Wins   : 0,
 				player2Losses : 0,
 				player2Ties   : 0,
-				restartGame   : false
+				restartGame   : false,
+				chat          : [""]
 			});
 		};
 };
@@ -405,6 +429,17 @@ function processUserName (userName) {
 	};
 };
 
+         /* ---------- ---------- ---------- ---------- */
+		 
+function clicChat (msg) {
+	$("#chat-input").val ("");
+	msg = game.userName + ": " + msg;
+	game.chat.push (msg);
+			
+	db.ref ( "RPSgame/playing/" + game.playingKey ).update ({
+		chat : game.chat
+	});
+};
 
 // FUNCTION CALLS (Execution)
 // =======================================================================================
@@ -439,5 +474,11 @@ $("#row3").on ( "click", 					// clic to make choice
 					if (game.status === "ready2Play") {
 						saveChoice ( $(this).attr ("alt") );
 					}
-
 				});
+
+$("#clicChat").on( "click",             // Chat
+	    function (event) {
+			event.preventDefault();
+			clicChat ( $("#chat-input").val().trim() );
+	    }
+);

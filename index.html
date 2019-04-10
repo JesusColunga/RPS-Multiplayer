@@ -1,6 +1,6 @@
 <!-- index.html  v3                                     -->
 <!-- Unit 7 Assignment: Rock Paper Scissors (Challenge) -->
-<!-- 8/Apr/2019                                         -->
+<!-- 9/Apr/2019                                         -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -38,7 +38,8 @@
 					<ul id = "leftP">
 						<li> Type your name             </li>
 						<li> Wait for your opponent     </li>
-						<li> Make your choise (R, P, S) while playing </li>
+						<li> Then you may chat     </li>
+						<li> Make your choise (R, P, S) while images are playing </li>
 						<li> Have  F U N   ! ! !        </li>
 					</ul>
 				</p>
@@ -91,9 +92,24 @@
         </div>
 
         <div class="row" id="row4">           <!-- Row 4:  -->
+			<form class="card w-75 border-secondary bg-transparent m-5">
+				<div class="chatForm">
+					<label for="chat-input"> Chat: </label>  
+				</div>
+				
+				<div class="chatForm">
+					<input type="text" id="chat-input">
+				</div>
+
+				<div class="chatForm">
+					<button type="submit" class="btn btn-outline-info" id="clicChat" > Send </button>
+				</div>
+			</form>
         </div>
 
         <div class="row" id="row5">           <!-- Row 5:  -->
+			<div class="card w-75 border-secondary bg-transparent m-5" id="chat">
+			</div>
         </div>
     </div>
 
